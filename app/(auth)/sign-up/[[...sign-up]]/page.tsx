@@ -4,11 +4,7 @@ import React from "react";
 type Props = {};
 
 const SignUpPage = (props: Props) => {
-  return (
-    <div className="flex justify-center items-center">
-      <SignUp />
-    </div>
-  );
+  return <SignUp />;
 };
 
 export default SignUpPage;
