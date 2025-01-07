@@ -20,17 +20,18 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { Input } from "./ui/input";
+import { CommandDialogDemo } from "./searchbar";
 
 const links = [
   { title: "New Repository", href: "/new" },
-  { title: "Import Repository", href: "/" },
+  { title: "Import Repository", href: "/new/import" },
   { title: "New Project", href: "/" },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -52,14 +53,26 @@ export default function Navbar() {
     router.push("/pull");
   };
 
+  const path = usePathname().replace(/^\/+/, "");
+
+  const firstSegment = path.split("/")[0];
+  const displayPath = firstSegment
+    ? firstSegment.charAt(0).toUpperCase() + firstSegment.slice(1)
+    : "Dashboard";
+
+  useEffect(() => {
+    if (displayPath === "Dashboard") {
+      router.push("/");
+    }
+  }, [displayPath, router]);
+
   return (
     <div className="p-4 flex items-center border-b border-gray-500 justify-between">
       <div className="flex items-center justify-center gap-2">
         <SignedIn>
           <Button
             variant="outline"
-            className="border border-gray-500 p-2.5 flex justify-center items-center"
-          >
+            className="border border-gray-500 p-2.5 flex justify-center items-center">
             <Menu />
           </Button>
         </SignedIn>
@@ -73,20 +86,27 @@ export default function Navbar() {
           />
         </Link>
         <SignedIn>
+          {/* path === "" ? "/" : `/${path}` */}
           <Link
-            href="/"
-            className="bg--500 p-1 hover:bg-black/20 rounded-md transition ease-in-out"
-          >
-            Dashboard
+            href={`${firstSegment}`}
+            className="bg--500 p-1 hover:bg-black/20 rounded-md transition ease-in-out">
+            {displayPath}
           </Link>
         </SignedIn>
       </div>
 
       <div className="flex items-center justify-end gap-2">
-        {/* <CommandDialogDemo /> */}
+        <Input
+          type="search"
+          className="outline-none border-gray-500"
+          placeholder="Search"
+        />
         <SignedIn>
           <div className="relative inline-block text-left" ref={dropdownRef}>
-            <Button variant="outline" onClick={() => setIsOpen(!isOpen)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsOpen(!isOpen)}
+              className="border-gray-500 p-2">
               <Plus />
               <ChevronDown />
             </Button>
@@ -97,15 +117,13 @@ export default function Navbar() {
                   className="py-1"
                   role="menu"
                   aria-orientation="vertical"
-                  aria-labelledby="options-menu"
-                >
+                  aria-labelledby="options-menu">
                   {links.map((link) => (
                     <Link
                       key={link.title}
                       href={link.href}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      role="menuitem"
-                    >
+                      role="menuitem">
                       {link.title}
                     </Link>
                   ))}
@@ -114,17 +132,26 @@ export default function Navbar() {
             )}
           </div>
 
-          <Button variant="outline" onClick={() => router.push("/issues")}>
+          <Button
+            variant="outline"
+            onClick={() => router.push("/issues")}
+            className="border-gray-500 p-2">
             <CircleDot />
           </Button>
-          <Button variant="outline" onClick={handleClick}>
+
+          <Button
+            variant="outline"
+            onClick={handleClick}
+            className="border-gray-500 p-2">
             <GitPullRequest />
           </Button>
-          <Link href="/notifications">
-            <Button variant="outline">
-              <Inbox />
-            </Button>
-          </Link>
+
+          <Button
+            variant="outline"
+            className="border-gray-500 p-2"
+            onClick={() => router.push("/notifications")}>
+            <Inbox />
+          </Button>
         </SignedIn>
 
         <div className="flex justify-center items-center">

@@ -37,17 +37,23 @@ const filters = [
 const allHandler = {};
 
 const NotificationPage = (props: Props) => {
-  const [active, setActive] = useState({ Inbox });
+  const [active, setActive] = useState("Inbox");
+
+  const handleLinkClick = (title: string) => {
+    setActive(title);
+  };
 
   return (
     <div className="grid md:grid-cols-[20%_80%]">
-      <div className="flex flex-col gap-2 p-4 ">
+      <div className="flex flex-col gap-2 p-4">
         {links.map((link) => (
           <Link
             key={link.title}
             href={link.href}
-            className="p-1.5 bg--300 flex items-center gap-2 rounded-md hover:bg-black/20"
-          >
+            className={`p-1.5 flex items-center gap-2 rounded-md hover:bg-black/20 ${
+              active === link.title ? "bg-black/20" : ""
+            }`}
+            onClick={() => handleLinkClick(link.title)}>
             {link.icons}
             {link.title}
           </Link>
@@ -57,8 +63,10 @@ const NotificationPage = (props: Props) => {
           <Link
             key={filter.title}
             href={filter.href}
-            className="p-1.5 bg--300 flex  items-center gap-2 rounded-md hover:bg-black/20"
-          >
+            className={`p-1.5 flex items-center gap-2 rounded-md hover:bg-black/20 ${
+              active === filter.title ? "bg-black/20" : ""
+            }`}
+            onClick={() => handleLinkClick(filter.title)}>
             {filter.icons}
             {filter.title}
           </Link>
@@ -69,8 +77,7 @@ const NotificationPage = (props: Props) => {
           <Button
             onClick={() => {}}
             variant="outline"
-            className=" rounded-md rounded-r-none"
-          >
+            className=" rounded-md rounded-r-none">
             All
           </Button>
           <Button variant="outline" className="rounded-md rounded-l-none">
@@ -83,8 +90,7 @@ const NotificationPage = (props: Props) => {
               type="text"
               placeholder="Search Notification"
               className="outline-none border-0 bg--400 "
-              size={90}
-            ></Input>
+              size={90}></Input>
           </div>
           <Button className="m-2" variant="outline">
             Group by:Date
